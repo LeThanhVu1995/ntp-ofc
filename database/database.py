@@ -4,8 +4,8 @@ from flask import session
 import pymongo
 from datetime import *
 import re
-myclient = pymongo.MongoClient("mongodb://172.16.0.51:27017/")
-mydb = myclient["QLVBNB_PROJECT"]
+myclient = pymongo.MongoClient("mongodb+srv://nat:Abcd@1234@natek-ntp.5stm1lg.mongodb.net/")
+mydb = myclient["ntp-ofc"]
 
 def get_colection():
     return  mydb.list_collection_names()
