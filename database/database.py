@@ -1,10 +1,14 @@
-
-
 from flask import session
 import pymongo
 from datetime import *
 import re
-myclient = pymongo.MongoClient("mongodb+srv://nat:Abcd@1234@natek-ntp.5stm1lg.mongodb.net/")
+import urllib.parse
+
+host = "natek-ntp.5stm1lg.mongodb.net"
+username = "nat"
+password = "Abcd@1234"  
+
+myclient = pymongo.MongoClient(f'mongodb+srv://{username}:{urllib.parse.quote_plus(password)}@{host}/')
 mydb = myclient["ntp-ofc"]
 
 def get_colection():
