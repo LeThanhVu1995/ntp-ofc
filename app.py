@@ -171,6 +171,10 @@ def logout():
     logging(session.get('userId'),session.get('departmentId'),session.get('fullName'),session.get('IP'), 'LOGOUT')
     session.clear()
     return jsonify({'success': True})
+
+@app.route("/api/hello")
+def hellologout():
+    return "Hello world"
     
 def response(success, message, data):
      return jsonify({"success": success, "message": message, "data": data })
