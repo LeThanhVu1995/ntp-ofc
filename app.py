@@ -2,7 +2,6 @@
 from flask import  Flask ,session, request, jsonify
 from datetime import datetime
 from database.database import *
-import logging
 from services.jsonClassEncoder import JsonClassEncoder
 
 app = Flask(__name__)
@@ -137,13 +136,13 @@ def login():
     hashPassword = hash_mk(userPassword)
     username = kiem_tra_dang_nhap_hop_le(userId, hashPassword)
 
-    if session['username'] is not None:
+    if session.get('username') is not None:
         return response(True, "Đăng nhập thành công")
 
     if username==False:
         fullName=MANHANVIEN_HOTEN(userId)
         logging(userId, departmentId, fullName, IP, 'MẬT KHẨU KHÔNG ĐÚNG')
-        return response(True, "MẬT KHẨU KHÔNG ĐÚNG", None)
+        return jsonClassEncoder.encode(None), 400
     else:
         fullName=MANHANVIEN_HOTEN(userId)
         logging(userId, departmentId, fullName, IP,'Đăng nhập thành công')
@@ -159,7 +158,7 @@ def login():
         session['fullName']=fullName
         session['username']=username
 
-        return response(True, "MẬT KHẨU KHÔNG ĐÚNG", {})
+        return jsonClassEncoder.encode(user), 200
     
 @app.route('/api/getUserActionLogs',methods=['GET'])      
 def getUserActionLogs():
@@ -171,7 +170,7 @@ def getUserActionLogs():
 def logout():
     logging(session.get('userId'),session.get('departmentId'),session.get('fullName'),session.get('IP'), 'LOGOUT')
     session.clear()
-    return jsonClassEncoder.encode(None), 200
+    return jsonify({'success': True})
     
 def response(success, message, data):
      return jsonify({"success": success, "message": message, "data": data })
