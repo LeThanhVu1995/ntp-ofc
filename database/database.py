@@ -23,7 +23,7 @@ def Insert_one(mydict,collect):
 def Find_query(key,value,collect):
     mycol = mydb[collect]
     myquery = {key:value}
-    mydoc = mycol.find(myquery).sort('STT_PHIEUDX',pymongo.DESCENDING)
+    mydoc = mycol.find(myquery, {'_id': 0}).sort('STT_PHIEUDX',pymongo.DESCENDING)
     list_mydoc=[]
     for x in mydoc:
         list_mydoc.append(x)
@@ -31,7 +31,7 @@ def Find_query(key,value,collect):
 
 def Find_myquery(myquery,collect):
     mycol = mydb[collect]
-    mydoc = mycol.find(myquery).sort('STT_PHIEUDX',pymongo.DESCENDING)
+    mydoc = mycol.find(myquery, {'_id': 0}).sort('STT_PHIEUDX',pymongo.DESCENDING)
     list_mydoc=[]
     for x in mydoc:
         list_mydoc.append(x)
@@ -39,7 +39,7 @@ def Find_myquery(myquery,collect):
 
 def Find_myquery_sort(myquery,sort,collect):
     mycol = mydb[collect]
-    mydoc = mycol.find(myquery).sort(sort,pymongo.DESCENDING)
+    mydoc = mycol.find(myquery, {'_id': 0}).sort(sort,pymongo.DESCENDING)
     list_mydoc=[]
     for x in mydoc:
         list_mydoc.append(x)
@@ -47,7 +47,7 @@ def Find_myquery_sort(myquery,sort,collect):
 
 def Find_myquery_sort_ASC(myquery,sort,collect):
     mycol = mydb[collect]
-    mydoc = mycol.find(myquery).sort(sort,1)
+    mydoc = mycol.find(myquery, {'_id': 0}).sort(sort,1)
     list_mydoc=[]
     for x in mydoc:
         list_mydoc.append(x)
@@ -56,7 +56,7 @@ def Find_myquery_sort_ASC(myquery,sort,collect):
 def Find_all(collect):
     list_mydoc=[]
     mycol = mydb[collect]
-    for x in mycol.find():
+    for x in mycol.find({}, {'_id': 0}):
         list_mydoc.append(x)
     return list_mydoc
 
@@ -71,7 +71,7 @@ def danh_sach_chuc_vu(collect):
 def danh_sach_khoa_phong(collect):
     list_mydoc=[]
     mycol = mydb[collect]
-    for x in mycol.find().sort('TENGOIKHOAPHONG',pymongo.ASCENDING):
+    for x in mycol.find({},{'_id': 0}).sort('TENGOIKHOAPHONG',pymongo.ASCENDING):
         list_mydoc.append(x)
     return list_mydoc
 
@@ -216,7 +216,7 @@ def tim_thong_tin_phieu(STT_PHIEUDX):
 def danh_sach_nhan_vien():
     mycol = mydb['danh_muc_nhan_vien']
     myquery = {'TRANGTHAi':True}
-    mydoc = mycol.find(myquery).sort('HOTEN',pymongo.ASCENDING)
+    mydoc = mycol.find(myquery, {'_id': 0}).sort('HOTEN',pymongo.ASCENDING)
     list_mydoc=[]
     for x in mydoc:
         list_mydoc.append(x)
@@ -1104,13 +1104,14 @@ def danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, PAGESIZ
     for i in get_colection():
         if len(i)==2:
             mycol = mydb[i]
-            query = {'LOAIPHIEU':'9', 'HOANTAT': TRANGTHAI,'DONVINHAN':DONVINHAN,'so_van_ban_den':{"$not": {"$regex": "NTP"}}}
-            mydoc = mycol.find(query).skip(SKIPCOUNT).limit(PAGESIZE).sort('STT_PHIEUDX',pymongo.DESCENDING)
+            mydoc = mycol.find(query, {'_id': 0}).skip(SKIPCOUNT).limit(PAGESIZE).sort('STT_PHIEUDX',pymongo.DESCENDING)
             if len(danh_sach) < PAGESIZE:
                 for doc in mydoc:
                     danh_sach.append(doc)
             else:
                 return danh_sach
+            
+    return danh_sach
 
 def danh_sach_cong_van_van_ban_khoa_phong_nhan_theo_trang_thai(DONVINHAN, TRANGTHAI):
     danh_sach=[]
@@ -1397,7 +1398,7 @@ def find_holiday(collect,db):
     mydb = myclient[db]
     list_mydoc=[]
     mycol = mydb[collect]
-    for x in mycol.find():
+    for x in mycol.find({}, {'_id': 0}):
         list_mydoc.append(x)
     return list_mydoc
 
