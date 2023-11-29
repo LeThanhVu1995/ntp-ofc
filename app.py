@@ -10,6 +10,7 @@ app.secret_key = 'this will be used to cryptograph sensible data like authentica
 
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
+
 jsonClassEncoder = JsonClassEncoder()
 jsonClassEncoder.ensure_ascii = False
 
