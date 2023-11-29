@@ -3,9 +3,13 @@ from flask import  Flask ,session, request, jsonify
 from datetime import datetime
 from database.database import *
 from services.jsonClassEncoder import JsonClassEncoder
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.secret_key = 'this will be used to cryptograph sensible data like authentication tokens'
+
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+
 jsonClassEncoder = JsonClassEncoder()
 jsonClassEncoder.ensure_ascii = False
 
