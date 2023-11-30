@@ -8,7 +8,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 app.secret_key = 'this will be used to cryptograph sensible data like authentication tokens'
 
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 jsonClassEncoder = JsonClassEncoder()
