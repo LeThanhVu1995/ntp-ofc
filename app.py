@@ -166,7 +166,7 @@ def login():
         hashPassword = hash_mk(userPassword)
         username = kiem_tra_dang_nhap_hop_le(userId, hashPassword)
 
-        if session.get('username') is not None:
+        if session.get('userId') is not None:
             user = doc_thong_tin_nhan_vien(userId)
             return responseSuccess(user)
 
