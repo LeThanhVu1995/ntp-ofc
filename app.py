@@ -9,11 +9,11 @@ app = Flask(__name__)
 app.secret_key = 'CLINNAT_API_REST'
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-if os.environ.get('FLASK_ENV') == 'production':
-    app.config['SESSION_COOKIE_SECURE'] = True
-    app.config['SESSION_COOKIE_DOMAIN'] = 'https://ntp-ofc.vercel.app/'
-    app.config['SESSION_COOKIE_MAX_AGE'] = 259200000 
-
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_DOMAIN'] = 'ntp-ofc.vercel.app'
+app.config['SESSION_COOKIE_MAX_AGE'] = 259200000 
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+    
 @app.route('/api/getDapartments', methods=(['GET']))
 def getDepartments():
     try:
