@@ -1,5 +1,4 @@
 
-import os
 from flask import  Flask ,session, request, jsonify
 from datetime import datetime
 from database.database import *
@@ -7,13 +6,11 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 app.secret_key = 'CLINNAT_API_REST'
-CORS(app, resources={r"/api/*": {"origins": "*"}})
-
+app.config['SESSION_COOKIE_DOMAIN'] = 'ntp.shopdux.com'
 app.config['SESSION_COOKIE_SECURE'] = True
-app.config['SESSION_COOKIE_DOMAIN'] = 'ntp-ofc.vercel.app'
-app.config['SESSION_COOKIE_MAX_AGE'] = 259200000 
-app.config['SESSION_COOKIE_SAMESITE'] = 'None'
-    
+
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+
 @app.route('/api/getDapartments', methods=(['GET']))
 def getDepartments():
     try:
@@ -219,8 +216,8 @@ def logout():
 
 @app.route("/api/hello")
 def hellologout():
-    return "Hello world"
-    
+    return {"session": session}
+
 def response(success, message, data):
      return jsonify({"success": success, "message": message, "data": data }), 200
 
