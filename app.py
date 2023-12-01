@@ -168,7 +168,7 @@ def login():
 
         if session.get('userId') is not None:
             user = doc_thong_tin_nhan_vien(userId)
-            return responseSuccess(user)
+            return responseSuccess(session)
 
         if username==False:
             fullName=MANHANVIEN_HOTEN(userId)
@@ -189,7 +189,7 @@ def login():
             session['fullName']=fullName
             session['username']=username
 
-            return responseSuccess(user)
+            return responseSuccess(session)
     except Exception as e:
         return responseError(e)
     
@@ -199,10 +199,10 @@ def getUserActionLogs():
         userId = session.get('userId')
 
         if userId is None:
-            return response(False, "Bạn chưa đăng nhập", None)
+            return response(False, "Bạn chưa đăng nhập", session)
 
         userActionLogs=Find_myquery_sort({'MANHANVIEN':userId},'STT_PHIEUDX','logging')
-        return responseSuccess(userActionLogs)
+        return responseSuccess(session)
     except Exception as e:
         return responseError(e)
     
