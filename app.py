@@ -6,8 +6,6 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 app.secret_key = 'CLINNAT_API_REST'
-app.config['SESSION_COOKIE_DOMAIN'] = 'ntp.shopdux.com'
-app.config['SESSION_COOKIE_SECURE'] = True
 
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
