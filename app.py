@@ -6,9 +6,8 @@ from database.database import *
 from flask_cors import CORS
 
 app = Flask(__name__)
-app.secret_key = 'this will be used to cryptograph sensible data like authentication tokens'
+app.secret_key = 'CLINNAT_API_REST'
 CORS(app, resources={r"/api/*": {"origins": "*"}})
-
 
 if os.environ.get('FLASK_ENV') == 'production':
     app.config['SESSION_COOKIE_SECURE'] = True
@@ -169,7 +168,7 @@ def login():
 
         if session.get('userId') is not None:
             user = doc_thong_tin_nhan_vien(userId)
-            return responseSuccess(session)
+            return responseSuccess(user)
 
         if username==False:
             fullName=MANHANVIEN_HOTEN(userId)
@@ -190,7 +189,7 @@ def login():
             session['fullName']=fullName
             session['username']=username
 
-            return responseSuccess(session)
+            return responseSuccess(user)
     except Exception as e:
         return responseError(e)
     
@@ -200,7 +199,7 @@ def getUserActionLogs():
         userId = session.get('userId')
 
         if userId is None:
-            return response(False, "Bạn chưa đăng nhập", session)
+            return response(False, "Bạn chưa đăng nhập", None)
 
         userActionLogs=Find_myquery_sort({'MANHANVIEN':userId},'STT_PHIEUDX','logging')
         return responseSuccess(userActionLogs)
