@@ -1,18 +1,19 @@
 
+import os
 from flask import  Flask ,session, request, jsonify
 from datetime import datetime
 from database.database import *
-from services.jsonClassEncoder import JsonClassEncoder
 from flask_cors import CORS
 
 app = Flask(__name__)
 app.secret_key = 'this will be used to cryptograph sensible data like authentication tokens'
-
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
-jsonClassEncoder = JsonClassEncoder()
-jsonClassEncoder.ensure_ascii = False
+if os.environ.get('FLASK_ENV') == 'production':
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_DOMAIN'] = 'https://ntp-ofc.vercel.app/'
+    app.config['SESSION_COOKIE_MAX_AGE'] = 259200000 
 
 @app.route('/api/getDapartments', methods=(['GET']))
 def getDepartments():
@@ -202,7 +203,7 @@ def getUserActionLogs():
             return response(False, "Bạn chưa đăng nhập", session)
 
         userActionLogs=Find_myquery_sort({'MANHANVIEN':userId},'STT_PHIEUDX','logging')
-        return responseSuccess(session)
+        return responseSuccess(userActionLogs)
     except Exception as e:
         return responseError(e)
     
