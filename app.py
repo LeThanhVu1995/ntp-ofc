@@ -3,11 +3,15 @@ from flask import  Flask ,session, request, jsonify
 from datetime import datetime
 from database.database import *
 from flask_cors import CORS
+import jwt
+
 
 app = Flask(__name__)
 app.secret_key = 'CLINNAT_API_REST'
-
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+
+BLACKLISTED_TOKENS = set()
+JWT_MINUTES = 60
 
 @app.route('/api/getDapartments', methods=(['GET']))
 def getDepartments():
@@ -155,47 +159,68 @@ def login():
     try:
         data = request.get_json()
         IP = getClientIP()
+
         userId = data.get('userId')
         departmentId = data.get('departmentId')
         userPassword = data.get('userPassword')
         hashPassword = hash_mk(userPassword)
         username = kiem_tra_dang_nhap_hop_le(userId, hashPassword)
 
-        if session.get('userId') is not None:
-            user = doc_thong_tin_nhan_vien(userId)
-            return responseSuccess(user)
-
         if username==False:
             fullName=MANHANVIEN_HOTEN(userId)
-            logging(userId, departmentId, fullName, IP, 'MẬT KHẨU KHÔNG ĐÚNG')
+            logging(userId, departmentId, fullName, IP, 'Mật khẩu không đúng')
             return response(False, "Đăng nhập thất bại", userId)
         else:
             fullName=MANHANVIEN_HOTEN(userId)
             logging(userId, departmentId, fullName, IP,'Đăng nhập thành công')
             user = doc_thong_tin_nhan_vien(userId)
 
-            session['IP']=IP
-            session['DATE']=datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-            session['departmentId']=departmentId
-            session['userId']=userId
-            session['hashPassword']=hashPassword
-            session['dateOfBirth']=user['NGAYSINH']
-            session['position']=user['CHUCVU']
-            session['fullName']=fullName
-            session['username']=username
+            userToken = {}
+            userToken['IP']=IP
+            userToken['DATE']=datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            userToken['departmentId']=departmentId
+            userToken['userId']=userId
+            userToken['hashPassword']=hashPassword
+            userToken['dateOfBirth']=user['NGAYSINH']
+            userToken['position']=user['CHUCVU']
+            userToken['fullName']=fullName
+            userToken['username']=username
 
-            return responseSuccess(user)
+            token = jwt.encode({'user': userToken, 'exp': datetime.now() + timedelta(minutes=JWT_MINUTES)}, app.config['SECRET_KEY'], algorithm='HS256')
+
+            return responseSuccess(token)
+        
     except Exception as e:
         return responseError(e)
+    
+
+def getToken():
+    token = request.headers.get('Authorization')
+    if not token or not token.startswith('Bearer '):
+        return None
+
+    token = token.split()[1]
+
+    if token in BLACKLISTED_TOKENS:
+        return None
+
+    try:
+        token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        return token
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
     
 @app.route('/api/getUserActionLogs',methods=['GET'])      
 def getUserActionLogs():
     try:
-        userId = session.get('userId')
-
-        if userId is None:
+        token = getToken()
+        if token is None:
             return response(False, "Bạn chưa đăng nhập", None)
-
+        
+        user = token['user']
+        userId = user['userId']
         userActionLogs=Find_myquery_sort({'MANHANVIEN':userId},'STT_PHIEUDX','logging')
         return responseSuccess(userActionLogs)
     except Exception as e:
@@ -205,16 +230,18 @@ def getUserActionLogs():
 @app.route("/api/logout", methods=['POST'])
 def logout():
     try:
-        logging(session.get('userId'),session.get('departmentId'),session.get('fullName'),session.get('IP'), 'LOGOUT')
-        session.clear()
-        return responseSuccess(session.get('userId'))
+        token = request.headers.get('Authorization')
+        if not token or not token.startswith('Bearer '):
+           return response(False, "Bạn chưa đăng nhập", None)
+
+        token = token.split()[1]
+
+        BLACKLISTED_TOKENS.add(token)
+        return responseSuccess(token)
+       
     except Exception as e:
         return responseError(e)
   
-
-@app.route("/api/hello")
-def hellologout():
-    return {"session": session}
 
 def response(success, message, data):
      return jsonify({"success": success, "message": message, "data": data }), 200
