@@ -185,10 +185,9 @@ def login():
             userToken['position']=user['CHUCVU']
             userToken['fullName']=fullName
             userToken['username']=username
-
             token = jwt.encode({'user': userToken, 'exp': datetime.now() + timedelta(minutes=JWT_MINUTES)}, app.config['SECRET_KEY'], algorithm='HS256')
 
-            return responseSuccess(token)
+            return responseSuccess({"token": token, "user": userToken})
         
     except Exception as e:
         return responseError(e)
