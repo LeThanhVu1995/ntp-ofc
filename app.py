@@ -61,12 +61,12 @@ def getOfficialDocumentCnt():
         departmentId = request.args.get('departmentId')
         documentStatus = request.args.get('documentStatus')
         if departmentId is None:
-            officalDocuments = []
+            count = 0
         elif documentStatus is None:
-            officalDocuments = danh_sach_cong_van_van_ban_khoa_phong_nhan(departmentId)
+            count = dem_danh_sach_cong_van_van_ban_khoa_phong_nhan(departmentId)
         else:
-            officalDocuments = danh_sach_cong_van_van_ban_khoa_phong_nhan_theo_trang_thai(departmentId, documentStatus)
-        return responseSuccess(officalDocuments)
+            count = dem_danh_sach_cong_van_van_ban_khoa_phong_nhan_theo_trang_thai(departmentId, documentStatus)
+        return responseSuccess(count)
     except Exception as e:
         return responseError(e) 
 
@@ -108,22 +108,23 @@ def getSubmissionCnt():
         submissionStatus = request.args.get('submissionStatus')
         years = request.args.get('years')
         fullname = request.args.get('fullName')
-        officalDocuments = []
+        count = 0
         
         if not years:
             years = list_nam_tim_kiem()
 
         if departmentId is None:
-            officalDocuments = []
+            count= 0
         elif submissionStatus is not None:
             for year in years:
-                ds = danh_sach_phieu_theo_trang_thai(departmentId, fullname, year[2:], submissionStatus)
-                officalDocuments.extend(ds)
+                total = dem_danh_sach_phieu_theo_trang_thai(departmentId, fullname, year[2:], submissionStatus)
+                count = count + total
         else:
             for year in years:
-                officalDocuments.extend(danh_sach_phieu_theo_trang_thai(departmentId, fullname, year[2:], None))
+                total = dem_danh_sach_phieu_theo_trang_thai(departmentId, fullname, year[2:], None)
+                count = count + total
             
-        return responseSuccess(officalDocuments)
+        return responseSuccess(count)
     except Exception as e:
         return responseError(e) 
 

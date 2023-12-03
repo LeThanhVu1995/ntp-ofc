@@ -37,6 +37,12 @@ def Find_myquery(myquery,collect):
         list_mydoc.append(x)
     return list_mydoc
 
+def Count_myquery(myquery,collect):
+    mycol = mydb[collect]
+    mydoc = mycol.count_documents(myquery)
+    return mydoc
+   
+
 def Find_myquery_sort(myquery,sort,collect):
     mycol = mydb[collect]
     mydoc = mycol.find(myquery, {'_id': 0}).sort(sort,pymongo.DESCENDING)
@@ -1081,6 +1087,24 @@ def danh_sach_cong_van_van_ban_khoa_phong_nhan(DONVINHAN):
     sort_ds=sorted(danh_sach, key=lambda i: i['STT_PHIEUDX'],reverse=True)
     return sort_ds
 
+def dem_danh_sach_cong_van_van_ban_khoa_phong_nhan(DONVINHAN):
+    count = 0
+    for i in get_colection():
+        if len(i)==2:
+            print(i)
+            total=Count_myquery({'LOAIPHIEU':'9','DONVINHAN':DONVINHAN,'so_van_ban_den':{"$not": {"$regex": "NTP"}}},i)
+            count = count + total
+              
+    return count
+
+def dem_danh_sach_cong_van_van_ban_khoa_phong_nhan_theo_trang_thai(DONVINHAN, TRANGTHAI):
+    count = 0
+    for i in get_colection():
+        if len(i)==2:
+            total=Count_myquery({'LOAIPHIEU':'9', 'HOANTAT': TRANGTHAI,'DONVINHAN':DONVINHAN,'so_van_ban_den':{"$not": {"$regex": "NTP"}}},i)
+            count = count + total
+
+    return count
 
   
 
@@ -1148,6 +1172,17 @@ def danh_sach_phieu_theo_trang_thai(TENGOIKHOAPHONG,HOTENXULY,STT_PHIEUDX,TRANGT
     
     list_mydoc= Find_myquery(myquery, collect)
     return list_mydoc
+
+def dem_danh_sach_phieu_theo_trang_thai(TENGOIKHOAPHONG,HOTENXULY,STT_PHIEUDX,TRANGTHAI):
+    collect=STT_PHIEUDX
+    collect=collect[:2]
+    myquery = {'HOTENXULY':HOTENXULY, 'HOANTAT': TRANGTHAI, 'DONVIXULY': TENGOIKHOAPHONG}
+
+    if TRANGTHAI is None:
+        myquery = {'HOTENXULY':HOTENXULY,'DONVIXULY': TENGOIKHOAPHONG}
+    
+    count= Count_myquery(myquery, collect)
+    return count
 
 def danh_sach_phieu_chua_xu_ly(TENGOIKHOAPHONG, HOTENXULY, STT_PHIEUDX):
     values_to_exclude = ['Hoàn Tất Xử Lý', 'Đang Đợi Xử Lý']
