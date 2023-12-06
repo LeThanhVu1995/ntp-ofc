@@ -75,14 +75,40 @@ def getOfficialDocumentCnt():
 def getOfficialDocument():
     try:
         departmentId = request.args.get('departmentId')
-        documentStatus = request.args.get('documentStatus')
+        documentStatus = request.args.getlist('documentStatus', None)
         fullname = request.args.get('fullname')
         officalId = request.args.get('officalId')
+        startDate = request.args.get('startDate')
+        endDate = request.args.get('endDate')
         page = int(request.args.get('page', 1))
         pageSize = int(request.args.get('pageSize', 10))
         skipCount = (page - 1) * pageSize
-        officalDocuments = danh_sach_cong_van_phan_trang(departmentId, fullname, documentStatus, officalId, pageSize, skipCount)
+
+        if len(documentStatus) == 0:
+            documentStatus = None
+
+        officalDocuments = danh_sach_cong_van_phan_trang(departmentId, fullname, documentStatus,  officalId, startDate, endDate, pageSize, skipCount)
         return responseSuccess(officalDocuments)
+    except Exception as e:
+        return responseError(e) 
+    
+
+@app.route('/api/getOfficialDocumentTotal', methods=(['GET']))
+def getOfficialDocumentTotal():
+    try:
+        departmentId = request.args.get('departmentId')
+        documentStatus = request.args.getlist('documentStatus', None)
+        fullname = request.args.get('fullname')
+        officalId = request.args.get('officalId')
+        startDate = request.args.get('startDate')
+        endDate = request.args.get('endDate')
+
+        if len(documentStatus) == 0:
+            documentStatus = None
+
+        count = dem_tong_danh_sach_cong_van_phan_trang(departmentId, fullname, documentStatus,  officalId, startDate, endDate)
+
+        return responseSuccess(count)
     except Exception as e:
         return responseError(e) 
 

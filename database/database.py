@@ -1108,12 +1108,34 @@ def dem_danh_sach_cong_van_van_ban_khoa_phong_nhan_theo_trang_thai(DONVINHAN, TR
 
   
 
-def danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, PAGESIZE, SKIPCOUNT):
+def danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, START, END, PAGESIZE, SKIPCOUNT):
     danh_sach=[]
-    query = {'LOAIPHIEU':'9', 'HOANTAT': TRANGTHAI,'DONVINHAN':DONVINHAN,'so_van_ban_den':{"$not": {"$regex": "NTP"}}}
+    query = {'LOAIPHIEU':'9','so_van_ban_den':{"$not": {"$regex": "NTP"}}}
+    
+    if DONVINHAN is not None:
+        query['DONVINHAN'] = DONVINHAN
+
+    if START is not None and END is not None:
+        start_date = datetime.strptime(START, '%Y/%m/%d')
+        end_date = datetime.strptime(END, '%Y/%m/%d')
+        start_date_str = start_date.strftime('%Y/%m/%d')
+        end_date_str = end_date.strftime('%Y/%m/%d')
+        query['NGAYNHAP'] = {'$gte': start_date_str, '$lte': end_date_str}
 
     if TRANGTHAI is not None:
-        query['HOANTAT'] = TRANGTHAI
+        query['HOANTAT'] =  {'$in': TRANGTHAI}
+        if 'Chưa Xử Lý' in TRANGTHAI:
+            if 'Hoàn Tất Xử Lý' in TRANGTHAI:
+                TRANGTHAI.remove('Hoàn Tất Xử Lý')
+            if 'Đang Đợi Xử Lý' in TRANGTHAI:
+                TRANGTHAI.remove('Đang Đợi Xử Lý')
+
+            if(len(TRANGTHAI) == 1):
+                TRANGTHAI.append('Hoàn Tất Xử Lý')
+                TRANGTHAI.append('Đang Đợi Xử Lý')
+                
+            TRANGTHAI.remove('Chưa Xử Lý')
+            query['HOANTAT'] =  {'$nin': TRANGTHAI}
 
     if HOTENXULY is not None:
         query['HOTENXULY'] = HOTENXULY
@@ -1137,6 +1159,54 @@ def danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, PAGESIZ
             
     return danh_sach
 
+
+def dem_tong_danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, START, END):
+    count = 0
+    query = {'LOAIPHIEU':'9','so_van_ban_den':{"$not": {"$regex": "NTP"}}}
+    
+    if DONVINHAN is not None:
+        query['DONVINHAN'] = DONVINHAN
+
+    if START is not None and END is not None:
+        start_date = datetime.strptime(START, '%Y/%m/%d')
+        end_date = datetime.strptime(END, '%Y/%m/%d')
+        start_date_str = start_date.strftime('%Y/%m/%d')
+        end_date_str = end_date.strftime('%Y/%m/%d')
+        query['NGAYNHAP'] = {'$gte': start_date_str, '$lte': end_date_str}
+
+    if TRANGTHAI is not None:
+        query['HOANTAT'] =  {'$in': TRANGTHAI}
+        if 'Chưa Xử Lý' in TRANGTHAI:
+            if 'Hoàn Tất Xử Lý' in TRANGTHAI:
+                TRANGTHAI.remove('Hoàn Tất Xử Lý')
+            if 'Đang Đợi Xử Lý' in TRANGTHAI:
+                TRANGTHAI.remove('Đang Đợi Xử Lý')
+
+            if(len(TRANGTHAI) == 1):
+                TRANGTHAI.append('Hoàn Tất Xử Lý')
+                TRANGTHAI.append('Đang Đợi Xử Lý')
+                
+            TRANGTHAI.remove('Chưa Xử Lý')
+            query['HOANTAT'] =  {'$nin': TRANGTHAI}
+
+    if HOTENXULY is not None:
+        query['HOTENXULY'] = HOTENXULY
+
+    if SOVB is not None:
+        regex_pattern = re.compile(f'.*{SOVB}.*', re.IGNORECASE)
+        query['$and'] = [
+            {'so_van_ban_den': {'$regex': regex_pattern}},
+            {'so_van_ban_den': {"$not": {"$regex": "NTP"}}}
+        ]
+
+    for i in get_colection():
+        if len(i)==2:
+            mycol = mydb[i]
+            mydoc = mycol.count_documents(query)
+            count = count + mydoc
+            
+    return count
+
 def danh_sach_cong_van_van_ban_khoa_phong_nhan_theo_trang_thai(DONVINHAN, TRANGTHAI):
     danh_sach=[]
     for i in get_colection():
@@ -1159,7 +1229,7 @@ def danh_sach_cong_van_van_ban_khoa_phong_nhan_chua_xu_ly(DONVINHAN, take):
                 else:
                     sort_ds=sorted(danh_sach, key=lambda i: i['STT_PHIEUDX'],reverse=True)
                     return sort_ds
-    return sort_ds
+    return danh_sach
     
 
 def danh_sach_phieu_theo_trang_thai(TENGOIKHOAPHONG,HOTENXULY,STT_PHIEUDX,TRANGTHAI):
