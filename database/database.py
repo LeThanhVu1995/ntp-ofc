@@ -1273,10 +1273,10 @@ def danh_sach_phieu_theo_trang_thai(TENGOIKHOAPHONG,HOTENXULY,STT_PHIEUDX,TRANGT
 def dem_danh_sach_phieu_theo_trang_thai(TENGOIKHOAPHONG,HOTENXULY,STT_PHIEUDX,TRANGTHAI):
     collect=STT_PHIEUDX
     collect=collect[:2]
-    myquery = {'HOTENXULY':HOTENXULY,'DONVIXULY': TENGOIKHOAPHONG}
+    myquery = {'DONVIXULY': TENGOIKHOAPHONG}
 
     if TRANGTHAI is not None:
-        myquery = {'HOTENXULY':HOTENXULY, 'HOANTAT': TRANGTHAI, 'DONVIXULY': TENGOIKHOAPHONG}
+        myquery = { 'HOANTAT': TRANGTHAI, 'DONVIXULY': TENGOIKHOAPHONG}
         if TRANGTHAI == 'Chưa Xử Lý':
             values_to_exclude = ['Hoàn Tất Xử Lý', 'Đang Đợi Xử Lý']
             myquery['HOANTAT'] = {'$nin': values_to_exclude}
