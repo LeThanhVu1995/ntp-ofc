@@ -5,7 +5,6 @@ from database.database import *
 from flask_cors import CORS
 import jwt
 
-
 app = Flask(__name__)
 app.secret_key = 'CLINNAT_API_REST'
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
@@ -75,7 +74,7 @@ def getOfficialDocumentCnt():
 def getOfficialDocument():
     try:
         departmentId = request.args.get('departmentId')
-        documentStatus = request.args.getlist('documentStatus', None)
+        documentStatus = request.args.get('documentStatus', None)
         fullname = request.args.get('fullname')
         officalId = request.args.get('officalId')
         startDate = request.args.get('startDate')
@@ -84,8 +83,11 @@ def getOfficialDocument():
         pageSize = int(request.args.get('pageSize', 10))
         skipCount = (page - 1) * pageSize
 
-        if len(documentStatus) == 0:
+        if documentStatus == '':
             documentStatus = None
+
+        if documentStatus is not None:
+            documentStatus = documentStatus.split(',')
 
         officalDocuments = danh_sach_cong_van_phan_trang(departmentId, fullname, documentStatus,  officalId, startDate, endDate, pageSize, skipCount)
         return responseSuccess(officalDocuments)

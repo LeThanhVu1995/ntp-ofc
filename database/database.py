@@ -1112,7 +1112,11 @@ def dem_danh_sach_cong_van_van_ban_khoa_phong_nhan_theo_trang_thai(DONVINHAN, TR
 
     return count
 
-  
+def contains_substring(input_string, substrings):
+    for substring in substrings:
+        if substring in input_string:
+            return True
+    return False
 
 def danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, START, END, PAGESIZE, SKIPCOUNT):
     danh_sach=[]
@@ -1130,15 +1134,16 @@ def danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, START, 
 
     if TRANGTHAI is not None:
         query['HOANTAT'] =  {'$in': TRANGTHAI}
+       
         if 'Chưa Xử Lý' in TRANGTHAI:
-            if 'Hoàn Tất Xử Lý' in TRANGTHAI:
-                TRANGTHAI.remove('Hoàn Tất Xử Lý')
-            if 'Đang Đợi Xử Lý' in TRANGTHAI:
-                TRANGTHAI.remove('Đang Đợi Xử Lý')
-
-            if(len(TRANGTHAI) == 1):
+            if len(TRANGTHAI) == 1:
                 TRANGTHAI.append('Hoàn Tất Xử Lý')
                 TRANGTHAI.append('Đang Đợi Xử Lý')
+            else:
+                if 'Hoàn Tất Xử Lý' in TRANGTHAI:
+                    TRANGTHAI.remove('Hoàn Tất Xử Lý')
+                if 'Đang Đợi Xử Lý' in TRANGTHAI:
+                    TRANGTHAI.remove('Đang Đợi Xử Lý')
                 
             TRANGTHAI.remove('Chưa Xử Lý')
             query['HOANTAT'] =  {'$nin': TRANGTHAI}
