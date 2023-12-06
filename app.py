@@ -105,8 +105,11 @@ def getOfficialDocumentTotal():
         startDate = request.args.get('startDate')
         endDate = request.args.get('endDate')
 
-        if len(documentStatus) == 0:
+        if documentStatus == '':
             documentStatus = None
+
+        if documentStatus is not None:
+            documentStatus = documentStatus.split(',')
 
         count = dem_tong_danh_sach_cong_van_phan_trang(departmentId, fullname, documentStatus,  officalId, startDate, endDate)
 
