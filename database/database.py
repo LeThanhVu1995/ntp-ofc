@@ -1099,9 +1099,15 @@ def dem_danh_sach_cong_van_van_ban_khoa_phong_nhan(DONVINHAN):
 
 def dem_danh_sach_cong_van_van_ban_khoa_phong_nhan_theo_trang_thai(DONVINHAN, TRANGTHAI):
     count = 0
+    query = {'LOAIPHIEU':'9', 'HOANTAT': TRANGTHAI,'DONVINHAN':DONVINHAN,'so_van_ban_den':{"$not": {"$regex": "NTP"}}}
+
+    if TRANGTHAI == 'Chưa Xử Lý':
+        values_to_exclude = ['Hoàn Tất Xử Lý', 'Đang Đợi Xử Lý']
+        query['HOANTAT'] = {'$nin': values_to_exclude}
+
     for i in get_colection():
         if len(i)==2:
-            total=Count_myquery({'LOAIPHIEU':'9', 'HOANTAT': TRANGTHAI,'DONVINHAN':DONVINHAN,'so_van_ban_den':{"$not": {"$regex": "NTP"}}},i)
+            total=Count_myquery(query ,i)
             count = count + total
 
     return count
@@ -1209,9 +1215,15 @@ def dem_tong_danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB
 
 def danh_sach_cong_van_van_ban_khoa_phong_nhan_theo_trang_thai(DONVINHAN, TRANGTHAI):
     danh_sach=[]
+    query = {'LOAIPHIEU':'9', 'HOANTAT': TRANGTHAI,'DONVINHAN':DONVINHAN,'so_van_ban_den':{"$not": {"$regex": "NTP"}}}
+
+    if TRANGTHAI == 'Chưa Xử Lý':
+        values_to_exclude = ['Hoàn Tất Xử Lý', 'Đang Đợi Xử Lý']
+        query['HOANTAT'] = {'$nin': values_to_exclude}
+
     for i in get_colection():
         if len(i)==2:
-            ds=Find_myquery({'LOAIPHIEU':'9', 'HOANTAT': TRANGTHAI,'DONVINHAN':DONVINHAN,'so_van_ban_den':{"$not": {"$regex": "NTP"}}},i)
+            ds=Find_myquery(query ,i)
             for i in ds:
                 danh_sach.append(i)
     sort_ds=sorted(danh_sach, key=lambda i: i['STT_PHIEUDX'],reverse=True)
@@ -1246,10 +1258,13 @@ def danh_sach_phieu_theo_trang_thai(TENGOIKHOAPHONG,HOTENXULY,STT_PHIEUDX,TRANGT
 def dem_danh_sach_phieu_theo_trang_thai(TENGOIKHOAPHONG,HOTENXULY,STT_PHIEUDX,TRANGTHAI):
     collect=STT_PHIEUDX
     collect=collect[:2]
-    myquery = {'HOTENXULY':HOTENXULY, 'HOANTAT': TRANGTHAI, 'DONVIXULY': TENGOIKHOAPHONG}
+    myquery = {'HOTENXULY':HOTENXULY,'DONVIXULY': TENGOIKHOAPHONG}
 
-    if TRANGTHAI is None:
-        myquery = {'HOTENXULY':HOTENXULY,'DONVIXULY': TENGOIKHOAPHONG}
+    if TRANGTHAI is not None:
+        myquery = {'HOTENXULY':HOTENXULY, 'HOANTAT': TRANGTHAI, 'DONVIXULY': TENGOIKHOAPHONG}
+        if TRANGTHAI == 'Chưa Xử Lý':
+            values_to_exclude = ['Hoàn Tất Xử Lý', 'Đang Đợi Xử Lý']
+            myquery['HOANTAT'] = {'$nin': values_to_exclude}
     
     count= Count_myquery(myquery, collect)
     return count
