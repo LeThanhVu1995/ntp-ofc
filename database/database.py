@@ -4,6 +4,8 @@ from datetime import *
 import re
 import urllib.parse
 
+import logging as log
+
 host = "natek-ntp.5stm1lg.mongodb.net"
 username = "nat"
 password = "Abcd@1234"  
@@ -1142,8 +1144,12 @@ def danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, START, 
             else:
                 if 'Hoàn Tất Xử Lý' in TRANGTHAI:
                     TRANGTHAI.remove('Hoàn Tất Xử Lý')
+                else:
+                    TRANGTHAI.append('Hoàn Tất Xử Lý')
                 if 'Đang Đợi Xử Lý' in TRANGTHAI:
                     TRANGTHAI.remove('Đang Đợi Xử Lý')
+                else:
+                    TRANGTHAI.append('Đang Đợi Xử Lý')
                 
             TRANGTHAI.remove('Chưa Xử Lý')
             query['HOANTAT'] =  {'$nin': TRANGTHAI}
@@ -1188,14 +1194,18 @@ def dem_tong_danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB
     if TRANGTHAI is not None:
         query['HOANTAT'] =  {'$in': TRANGTHAI}
         if 'Chưa Xử Lý' in TRANGTHAI:
-            if 'Hoàn Tất Xử Lý' in TRANGTHAI:
-                TRANGTHAI.remove('Hoàn Tất Xử Lý')
-            if 'Đang Đợi Xử Lý' in TRANGTHAI:
-                TRANGTHAI.remove('Đang Đợi Xử Lý')
-
-            if(len(TRANGTHAI) == 1):
+            if len(TRANGTHAI) == 1:
                 TRANGTHAI.append('Hoàn Tất Xử Lý')
                 TRANGTHAI.append('Đang Đợi Xử Lý')
+            else:
+                if 'Hoàn Tất Xử Lý' in TRANGTHAI:
+                    TRANGTHAI.remove('Hoàn Tất Xử Lý')
+                else:
+                    TRANGTHAI.append('Hoàn Tất Xử Lý')
+                if 'Đang Đợi Xử Lý' in TRANGTHAI:
+                    TRANGTHAI.remove('Đang Đợi Xử Lý')
+                else:
+                    TRANGTHAI.append('Đang Đợi Xử Lý')
                 
             TRANGTHAI.remove('Chưa Xử Lý')
             query['HOANTAT'] =  {'$nin': TRANGTHAI}
