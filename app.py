@@ -99,7 +99,7 @@ def getOfficialDocument():
 def getOfficialDocumentTotal():
     try:
         departmentId = request.args.get('departmentId')
-        documentStatus = request.args.getlist('documentStatus', None)
+        documentStatus = request.args.get('documentStatus', None)
         fullname = request.args.get('fullname')
         officalId = request.args.get('officalId')
         startDate = request.args.get('startDate')
@@ -111,7 +111,7 @@ def getOfficialDocumentTotal():
         if documentStatus is not None:
             documentStatus = documentStatus.split(',')
 
-        count = dem_tong_danh_sach_cong_van_phan_trang(departmentId, fullname, documentStatus,  officalId, startDate, endDate)
+        count = dem_tong_danh_sach_cong_van_phan_trang(departmentId, fullname, documentStatus, officalId, startDate, endDate)
 
         return responseSuccess(count)
     except Exception as e:
