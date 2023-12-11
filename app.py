@@ -131,7 +131,7 @@ def getOfficialDocumentTotal():
 def getOfficialDocumentDashBoard():
     try:
         departmentId = request.args.get('departmentId')
-        limit = int(request.args.get('pageSize', 10))
+        limit = int(request.args.get('pageSize', 4))
 
         if departmentId is None:
             officalDocuments = []
@@ -176,7 +176,7 @@ def getSubmissionDashBoard():
         fullname = request.args.get('fullName')
         years = request.args.get('years')
         officalDocuments = []
-        take = 10
+        take = 4
         
         if not years:
             years = list_nam_tim_kiem()
@@ -256,12 +256,13 @@ def getToken():
 @app.route('/api/getUserActionLogs',methods=['GET'])      
 def getUserActionLogs():
     try:
-        token = getToken()
-        if token is None:
-            return response(False, "Bạn chưa đăng nhập", None)
+        # token = getToken()
+        # if token is None:
+        #     return response(False, "Bạn chưa đăng nhập", None)
         
-        user = token['user']
-        userId = user['userId']
+        # user = token['user']
+        # userId = user['userId']
+        userId = request.args.get('userId')
         userActionLogs=Find_myquery_sort({'MANHANVIEN':userId},'STT_PHIEUDX','logging')
         return responseSuccess(userActionLogs)
     except Exception as e:
