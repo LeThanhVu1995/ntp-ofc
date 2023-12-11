@@ -1120,7 +1120,7 @@ def contains_substring(input_string, substrings):
             return True
     return False
 
-def danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, START, END, PAGESIZE, SKIPCOUNT):
+def danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, START, END, TRICHYEU, PAGESIZE, SKIPCOUNT):
     danh_sach=[]
     query = {'LOAIPHIEU':'9','so_van_ban_den':{"$not": {"$regex": "NTP"}}}
     
@@ -1164,6 +1164,12 @@ def danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, START, 
             {'so_van_ban_den': {"$not": {"$regex": "NTP"}}}
         ]
 
+    if TRICHYEU is not None:
+        regex_pattern_trich_yeu = re.compile(f'.*{TRICHYEU}.*', re.IGNORECASE)
+        query['$and'] = [
+            {'DIENGIAI_LYDO': {'$regex': regex_pattern_trich_yeu}}
+        ]
+
     for i in get_colection():
         if len(i)==2:
             mycol = mydb[i]
@@ -1177,7 +1183,7 @@ def danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, START, 
     return danh_sach
 
 
-def dem_tong_danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, START, END):
+def dem_tong_danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, START, END, TRICHYEU):
     count = 0
     query = {'LOAIPHIEU':'9','so_van_ban_den':{"$not": {"$regex": "NTP"}}}
     
@@ -1218,6 +1224,12 @@ def dem_tong_danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB
         query['$and'] = [
             {'so_van_ban_den': {'$regex': regex_pattern}},
             {'so_van_ban_den': {"$not": {"$regex": "NTP"}}}
+        ]
+
+    if TRICHYEU is not None:
+        regex_pattern_trich_yeu = re.compile(f'.*{TRICHYEU}.*', re.IGNORECASE)
+        query['$and'] = [
+            {'DIENGIAI_LYDO': {'$regex': regex_pattern_trich_yeu}}
         ]
 
     for i in get_colection():

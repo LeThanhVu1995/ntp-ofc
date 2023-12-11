@@ -7,7 +7,7 @@ import jwt
 
 app = Flask(__name__)
 app.secret_key = 'CLINNAT_API_REST'
-CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 BLACKLISTED_TOKENS = set()
 JWT_MINUTES = 60
@@ -69,6 +69,14 @@ def getOfficialDocumentCnt():
     except Exception as e:
         return responseError(e) 
 
+@app.route('/api/getTimelineOfficalDocument', methods=(['GET']))
+def getTimelineOfficalDocument():
+    try:
+        STT_PHIEUDX = request.args.get('documentId')
+        data=Find_myquery({'STT_PHIEUDX':STT_PHIEUDX},STT_PHIEUDX[:2])
+        return responseSuccess(data)
+    except Exception as e:
+        return responseError(e) 
 
 @app.route('/api/getOfficialDocument', methods=(['GET']))
 def getOfficialDocument():
@@ -80,6 +88,7 @@ def getOfficialDocument():
         startDate = request.args.get('startDate')
         endDate = request.args.get('endDate')
         page = int(request.args.get('page', 1))
+        abstract = request.args.get('abstract', None)
         pageSize = int(request.args.get('pageSize', 10))
         skipCount = (page - 1) * pageSize
 
@@ -89,7 +98,7 @@ def getOfficialDocument():
         if documentStatus is not None:
             documentStatus = documentStatus.split(',')
 
-        officalDocuments = danh_sach_cong_van_phan_trang(departmentId, fullname, documentStatus,  officalId, startDate, endDate, pageSize, skipCount)
+        officalDocuments = danh_sach_cong_van_phan_trang(departmentId, fullname, documentStatus,  officalId, startDate, endDate, abstract, pageSize, skipCount)
         return responseSuccess(officalDocuments)
     except Exception as e:
         return responseError(e) 
@@ -104,6 +113,7 @@ def getOfficialDocumentTotal():
         officalId = request.args.get('officalId')
         startDate = request.args.get('startDate')
         endDate = request.args.get('endDate')
+        abstract = request.args.get('abstract', None)
 
         if documentStatus == '':
             documentStatus = None
@@ -111,7 +121,7 @@ def getOfficialDocumentTotal():
         if documentStatus is not None:
             documentStatus = documentStatus.split(',')
 
-        count = dem_tong_danh_sach_cong_van_phan_trang(departmentId, fullname, documentStatus, officalId, startDate, endDate)
+        count = dem_tong_danh_sach_cong_van_phan_trang(departmentId, fullname, documentStatus, officalId, startDate, endDate, abstract)
 
         return responseSuccess(count)
     except Exception as e:
