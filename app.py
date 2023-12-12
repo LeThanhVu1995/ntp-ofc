@@ -103,6 +103,37 @@ def getOfficialDocument():
     except Exception as e:
         return responseError(e) 
     
+@app.route('/api/getReportOfficialDocument', methods=(['GET']))
+def getReportOfficialDocument():
+    try:
+        type = request.args.get('type')
+        officalId = request.args.get('officalId')
+        startDate = request.args.get('startDate')
+        endDate = request.args.get('endDate')
+        page = int(request.args.get('page', 1))
+        abstract = request.args.get('abstract', None)
+        pageSize = int(request.args.get('pageSize', 10))
+        answer =  request.args.get('answer', None)
+        skipCount = (page - 1) * pageSize
+        officalDocuments = phieu_giai_quyet_van_ban_phan_trang(type, officalId, startDate, endDate, abstract, answer, pageSize, skipCount)
+        return responseSuccess(officalDocuments)
+    except Exception as e:
+        return responseError(e) 
+    
+@app.route('/api/getReportOfficialDocumentTotal', methods=(['GET']))
+def getReportOfficialDocumentTotal():
+    try:
+        type = request.args.get('type')
+        officalId = request.args.get('officalId')
+        startDate = request.args.get('startDate')
+        endDate = request.args.get('endDate')
+        abstract = request.args.get('abstract', None)
+        answer =  request.args.get('answer', None)
+        officalDocuments = dem_phieu_giai_quyet_van_ban_phan_trang(type, officalId, startDate, endDate, abstract, answer)
+        return responseSuccess(officalDocuments)
+    except Exception as e:
+        return responseError(e) 
+    
 
 @app.route('/api/getOfficialDocumentTotal', methods=(['GET']))
 def getOfficialDocumentTotal():

@@ -1182,6 +1182,81 @@ def danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, START, 
             
     return danh_sach
 
+def phieu_giai_quyet_van_ban_phan_trang(LOAI_CV, SOVB, START, END, TRICHYEU, ANSWER, PAGESIZE, SKIPCOUNT):
+    query = {}
+    if START is not None and END is not None:
+        start_date = datetime.strptime(START, '%Y/%m/%d')
+        end_date = datetime.strptime(END, '%Y/%m/%d')
+        start_date_str = start_date.strftime('%Y-%m-%d')
+        end_date_str = end_date.strftime('%Y-%m-%d')
+        query['ngay_ban_hanh'] = {'$gte': start_date_str, '$lte': end_date_str}
+
+    if ANSWER == 'VBYES':
+        query['so_van_ban_hoi_dap'] = {"$exists": True, "$ne": None, "$ne": ""}
+
+    if ANSWER == 'VBNO':
+         query["$or"]: [
+            {"so_van_ban_hoi_dap": {"$exists": True, "$eq": None}},
+            {"so_van_ban_hoi_dap": {"$exists": True, "$eq": ""}}
+        ]
+
+    if LOAI_CV is not None:
+        query['loai_cv'] = LOAI_CV
+
+    if SOVB is not None:
+        regex_pattern = re.compile(f'.*{SOVB}.*', re.IGNORECASE)
+        query['$and'] = [
+            {'so_van_ban_den': {'$regex': regex_pattern}}
+        ]
+
+    if TRICHYEU is not None:
+        regex_pattern_trich_yeu = re.compile(f'.*{TRICHYEU}.*', re.IGNORECASE)
+        query['$and'] = [
+            {'trich_yeu': {'$regex': regex_pattern_trich_yeu}}
+        ]
+
+    mycol = mydb['phieu_giai_quyet_van_ban_den']
+    mydoc = mycol.find(query, {'_id': 0}).skip(SKIPCOUNT).limit(PAGESIZE).sort('stt_cv',pymongo.ASCENDING)
+    return list(mydoc)
+
+def dem_phieu_giai_quyet_van_ban_phan_trang(LOAI_CV, SOVB, START, END, TRICHYEU, ANSWER):
+    query = {}
+    
+    if START is not None and END is not None:
+        start_date = datetime.strptime(START, '%Y/%m/%d')
+        end_date = datetime.strptime(END, '%Y/%m/%d')
+        start_date_str = start_date.strftime('%Y-%m-%d')
+        end_date_str = end_date.strftime('%Y-%m-%d')
+        query['ngay_ban_hanh'] = {'$gte': start_date_str, '$lte': end_date_str}
+
+    if ANSWER == 'VBYES':
+        query['so_van_ban_hoi_dap'] = {"$exists": True, "$ne": None, "$ne": ""}
+
+    if ANSWER == 'VBNO':
+         query["$or"]: [
+            {"so_van_ban_hoi_dap": {"$exists": True, "$eq": None}},
+            {"so_van_ban_hoi_dap": {"$exists": True, "$eq": ""}}
+    ]
+
+    if LOAI_CV is not None:
+        query['loai_cv'] = LOAI_CV
+
+    if SOVB is not None:
+        regex_pattern = re.compile(f'.*{SOVB}.*', re.IGNORECASE)
+        query['$and'] = [
+            {'so_van_ban_den': {'$regex': regex_pattern}}
+        ]
+
+    if TRICHYEU is not None:
+        regex_pattern_trich_yeu = re.compile(f'.*{TRICHYEU}.*', re.IGNORECASE)
+        query['$and'] = [
+            {'trich_yeu': {'$regex': regex_pattern_trich_yeu}}
+        ]
+
+    mycol = mydb['phieu_giai_quyet_van_ban_den']
+    mydoc = mycol.count_documents(query)
+    return mydoc
+
 
 def dem_tong_danh_sach_cong_van_phan_trang(DONVINHAN, HOTENXULY, TRANGTHAI, SOVB, START, END, TRICHYEU):
     count = 0
