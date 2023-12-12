@@ -1195,10 +1195,7 @@ def phieu_giai_quyet_van_ban_phan_trang(LOAI_CV, SOVB, START, END, TRICHYEU, ANS
         query['so_van_ban_hoi_dap'] = {"$exists": True, "$ne": None, "$ne": ""}
 
     if ANSWER == 'VBNO':
-         query["$or"]: [
-            {"so_van_ban_hoi_dap": {"$exists": True, "$eq": None}},
-            {"so_van_ban_hoi_dap": {"$exists": True, "$eq": ""}}
-        ]
+        query['so_van_ban_hoi_dap'] = {"$exists": True, "$in": [None, ""]}
 
     if LOAI_CV is not None:
         query['loai_cv'] = LOAI_CV
@@ -1233,10 +1230,7 @@ def dem_phieu_giai_quyet_van_ban_phan_trang(LOAI_CV, SOVB, START, END, TRICHYEU,
         query['so_van_ban_hoi_dap'] = {"$exists": True, "$ne": None, "$ne": ""}
 
     if ANSWER == 'VBNO':
-         query["$or"]: [
-            {"so_van_ban_hoi_dap": {"$exists": True, "$eq": None}},
-            {"so_van_ban_hoi_dap": {"$exists": True, "$eq": ""}}
-    ]
+        query['so_van_ban_hoi_dap'] = {"$exists": True, "$in": [None, ""]}
 
     if LOAI_CV is not None:
         query['loai_cv'] = LOAI_CV
